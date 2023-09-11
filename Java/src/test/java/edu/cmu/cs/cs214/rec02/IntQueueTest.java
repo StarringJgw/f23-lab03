@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -33,10 +35,11 @@ public class IntQueueTest {
     @Before
     public void setUp() {
         // comment/uncomment these lines to test each class
-        mQueue = new LinkedIntQueue();
+        mQueue = new ArrayIntQueue();
 //        mQueue = new ArrayIntQueue();
 
-        testList = new ArrayList<>(List.of(1, 2, 3));
+        // testList = new ArrayList<>(List.of(1, 2, 3));
+        testList = IntStream.range(1, 100).boxed().collect(Collectors.toList());
     }
 
     @Test
@@ -65,6 +68,7 @@ public class IntQueueTest {
     @Test
     public void testEnqueue() {
         for (int i = 0; i < testList.size(); i++) {
+            // mQueue.ensureCapacity();
             mQueue.enqueue(testList.get(i));
             assertEquals(testList.get(0), mQueue.peek());
             assertEquals(i + 1, mQueue.size());
@@ -73,6 +77,7 @@ public class IntQueueTest {
 
     @Test
     public void testDequeue() {
+        assertNull(mQueue.dequeue());
         testList.forEach(n -> mQueue.enqueue(n));
         for (int i = 0; i < testList.size(); i++) {
             assertEquals(testList.get(i), mQueue.dequeue());
@@ -100,5 +105,36 @@ public class IntQueueTest {
         }
     }
 
+    @Test
+    public void testClear(){
+        mQueue.enqueue(1);
+        assertSame(mQueue.size(), 1);
+        mQueue.clear();
+        assertTrue(mQueue.isEmpty());
+    }
+
+    @Test
+    public void testEnsureCapacity(){
+        for (int i = 0; i < 8; i++){
+            mQueue.enqueue(i);
+        }
+        assertSame(mQueue.size(), 8);
+        for (int i = 0; i < 3; i++){
+            mQueue.dequeue();
+        }
+        assertSame(mQueue.peek(), 3);
+        assertSame(mQueue.size(), 5);
+
+        for (int i = 8; i < 80; i++){
+            mQueue.enqueue(i);
+        }
+        assertSame(mQueue.size(), 77);
+        for (int i = 3; i < 30; i++){
+            mQueue.dequeue();
+        }
+        assertSame(mQueue.peek(), 30);
+        assertSame(mQueue.size(), 50);
+        
+    }
 
 }
